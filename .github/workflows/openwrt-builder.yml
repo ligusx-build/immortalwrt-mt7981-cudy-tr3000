@@ -233,24 +233,6 @@ jobs:
               make -j1 V=s || exit 1
             fi
 
-            # 🔥 关键：在最终打包前，彻底清除 OpenClash
-            echo "🧹 Final purge before packaging..."
-            # 清理 rootfs
-            for rootdir in $(find ./build_dir -type d -name "root-*" 2>/dev/null); do
-            rm -rf "$rootdir/etc/openclash" 2>/dev/null || true
-            done
-            # 清理 staging
-            find ./staging_dir -type d -path "*/root-*/etc/openclash" -exec rm -rf {} + 2>/dev/null || true
-            # 删除编译好的 ipk
-            find ./bin/packages -name "*openclash*" -delete 2>/dev/null || true
-
-            # 🚀 强制重新打包（确保修改生效）
-            echo "🔄 Re-packaging firmware..."
-            make package/index
-            make -j1  # 这次只打包，不编译
-
-            echo "✅ $DEV build finished."
-
             # 6. 收集产物
             # 直接寻找所有 bin 文件并复制
             echo "📥 Collecting artifacts for $DEV..."
